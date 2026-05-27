@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>爷爷的种子</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=ZCOOL+XiaoWei&display=swap');
+:root{
+  --soil:#6b4c2a;--soil-l:#8b6340;--soil-d:#3e2a10;
+  --grass:#5a7a3a;--grass-l:#7cb96b;
+  --parch:#f5e6c8;--parch-d:#e2ce9e;
+  --ink:#3a2a1a;--ink-l:#6a4c2a;
+  --gold:#c8960a;--gold-l:#f0c040;
+  --sky:#0f1a2a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#1a2e0e;
+  font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background-image:
+    radial-gradient(1px 1px at 7% 12%,#fffc 0%,transparent 100%),
+    radial-gradient(1px 1px at 23% 58%,#fff8 0%,transparent 100%),
+    radial-gradient(1px 1px at 67% 9%,#fffa 0%,transparent 100%),
+    radial-gradient(1px 1px at 84% 38%,#fff7 0%,transparent 100%),
+    radial-gradient(1px 1px at 44% 80%,#fff9 0%,transparent 100%),
+    radial-gradient(1px 1px at 91% 67%,#fff6 0%,transparent 100%),
+    radial-gradient(2px 2px at 33% 22%,#ffe88840 0%,transparent 100%),
+    radial-gradient(2px 2px at 76% 55%,#ffe88830 0%,transparent 100%);
+  z-index:0;
+}
+.scene{position:relative;width:520px;z-index:1;}
+.scene-top{text-align:center;padding:10px 0 8px;}
+.title-en{font-size:10px;letter-spacing:5px;color:#7ab85a;opacity:.75;margin-bottom:3px;}
+.title-cn{font-size:24px;color:#e8d4a8;text-shadow:2px 2px 0 #3a2a1a,4px 4px 0 #050500;letter-spacing:4px;}
+.card{
+  background:var(--parch);border:4px solid var(--soil);
+  box-shadow:0 0 0 2px #3a2a1a,8px 8px 0 #050500,inset 0 0 60px rgba(139,99,64,.1);
+  padding:26px 28px;position:relative;margin-top:10px;min-height:300px;
+}
+.card::before{content:'✦';position:absolute;color:var(--gold);font-size:9px;top:7px;left:9px;}
+.card::after{content:'✦';position:absolute;color:var(--gold);font-size:9px;top:7px;right:9px;}
+.step{display:none;animation:fadeUp .45s ease;}
+.step.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chip{font-size:10px;letter-spacing:3px;color:var(--soil-l);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.chip::after{content:'';flex:1;height:1px;background:var(--soil-l);opacity:.28;}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 24px;
+  font-family:inherit;font-size:15px;cursor:pointer;
+  border:3px solid var(--soil);background:var(--soil);color:var(--parch);
+  letter-spacing:1px;box-shadow:3px 3px 0 #050500;outline:none;
+  transition:all .1s;margin-top:18px;
+}
+.btn:hover{background:var(--soil-l);transform:translate(-1px,-1px);box-shadow:4px 4px 0 #050500;}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #050500;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:3px 3px 0 #050500!important;}
+.btn-ghost{background:transparent;color:var(--soil);box-shadow:3px 3px 0 rgba(0,0,0,.12);}
+.btn-ghost:hover{background:rgba(107,76,42,.1);}
+.field-wrap{margin:10px 0;}
+.field-label{font-size:13px;color:var(--soil);margin-bottom:6px;}
+input[type=text]{
+  width:100%;background:rgba(107,76,42,.07);border:2px solid var(--soil-l);
+  padding:10px 13px;font-family:inherit;font-size:15px;color:var(--ink);
+  outline:none;line-height:1.8;transition:border-color .2s,background .2s;
+}
+input[type=text]:focus{border-color:var(--soil);background:rgba(107,76,42,.13);}
+input[type=text]::placeholder{color:#b8956a;opacity:.7;}
+.prose{font-size:15px;color:var(--ink);line-height:2.1;margin-bottom:10px;}
+.prose-sm{font-size:13px;color:var(--ink-l);line-height:1.9;}
+.blockquote{
+  background:rgba(107,76,42,.07);border-left:3px solid var(--gold);
+  padding:10px 14px;font-size:14px;color:#5a3c1a;line-height:1.9;margin:14px 0;font-style:italic;
+}
+.seed-pack{display:flex;flex-direction:column;align-items:center;gap:6px;margin:18px auto;}
+.seed-pack-img{font-size:52px;animation:swing 3s ease-in-out infinite;}
+@keyframes swing{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.seed-pack-label{font-size:12px;letter-spacing:2px;color:var(--ink-l);}
+/* 选择题 */
+.choices{display:flex;flex-direction:column;gap:9px;margin-top:6px;}
+.choice-btn{
+  display:flex;align-items:center;gap:10px;padding:11px 15px;
+  background:rgba(107,76,42,.06);border:2px solid rgba(107,76,42,.22);
+  font-family:inherit;font-size:14px;color:var(--ink);
+  cursor:pointer;text-align:left;transition:all .15s;line-height:1.5;
+}
+.choice-btn:hover{background:rgba(107,76,42,.14);border-color:var(--soil-l);transform:translateX(3px);}
+.choice-btn.selected{background:rgba(107,76,42,.2);border-color:var(--soil);color:var(--soil);}
+.ckey{display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;background:var(--soil);color:var(--parch);font-size:11px;flex-shrink:0;}
+/* 游戏 */
+.game-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:4px 0 8px;}
+.game-title{font-size:15px;color:var(--ink);text-align:center;line-height:1.7;}
+.game-sub{font-size:12px;color:var(--ink-l);text-align:center;margin-top:-4px;}
+canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;image-rendering:pixelated;cursor:default;}
+.gbar-wrap{width:280px;height:10px;background:rgba(107,76,42,.18);border:2px solid var(--soil-l);}
+.gbar-fill{height:100%;background:var(--grass);width:0%;transition:width .25s;}
+.game-msg{font-size:14px;color:var(--ink);text-align:center;min-height:24px;line-height:1.6;}
+.game-success{display:none;flex-direction:column;align-items:center;gap:8px;padding:14px 0 4px;}
+.game-success.show{display:flex;}
+.sicon{font-size:36px;animation:pop .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.stxt{font-size:16px;color:var(--grass);letter-spacing:1px;}
+.ssub{font-size:13px;color:var(--ink-l);}
+/* 农场过场 */
+.farm-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.farm-cvwrap{width:400px;height:160px;position:relative;overflow:hidden;}
+.sky-bg{position:absolute;inset:0;height:80px;background:var(--sky);}
+.moon{position:absolute;top:12px;right:40px;width:22px;height:22px;background:#ffe88e;border-radius:50%;box-shadow:0 0 0 2px #c8a820;}
+.ground{position:absolute;bottom:0;left:0;right:0;height:88px;background:var(--soil);border-top:4px solid var(--soil-l);}
+.grass-strip{position:absolute;bottom:84px;left:0;right:0;height:8px;background:var(--grass);}
+.plot-grid{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:grid;gap:6px;}
+.pcell{width:46px;height:46px;background:#5a3a1a;border:2px solid #3a2510;position:relative;}
+.pcell.tilled{background:#3e2208;}
+.pseed{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);width:9px;height:9px;background:var(--soil-l);border:1px solid #5a3018;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.pseed.planted{transform:translate(-50%,-50%) scale(1);}
+.psprout{position:absolute;bottom:4px;left:50%;transform:translateX(-50%) scaleY(0);transform-origin:bottom center;width:4px;height:20px;background:var(--grass-l);transition:transform .55s ease;}
+.psprout.grown{transform:translateX(-50%) scaleY(1);}
+.pleaf{position:absolute;top:5px;left:-5px;width:9px;height:6px;background:#5da64e;border-radius:0 50% 50% 0;transform:scaleX(0);transform-origin:right center;transition:transform .3s ease .45s;}
+.pleaf.r{left:4px;border-radius:50% 0 0 50%;transform-origin:left center;}
+.psprout.grown .pleaf{transform:scaleX(1);}
+.pbar-wrap{width:260px;height:10px;background:rgba(107,76,42,.18);border:2px solid var(--soil-l);}
+.pbar-fill{height:100%;background:var(--grass);width:0%;transition:width .5s ease;}
+.farm-status{font-size:14px;color:var(--ink);text-align:center;min-height:44px;line-height:1.8;padding:0 16px;}
+/* 信件 */
+.letter-head{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding-bottom:13px;border-bottom:1px dashed var(--soil-l);}
+.letter-seal{width:46px;height:46px;flex-shrink:0;background:var(--soil);border:3px solid #3a2a1a;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:2px 2px 0 #050500;}
+.letter-from{font-size:12px;color:var(--ink-l);}
+.letter-to{font-size:17px;color:var(--ink);margin-top:3px;}
+.letter-body{font-size:15px;color:var(--ink);line-height:2.3;white-space:pre-wrap;min-height:80px;}
+.letter-foot{margin-top:18px;text-align:right;font-size:14px;color:var(--ink-l);padding-top:12px;border-top:1px dashed var(--soil-l);}
+/* 粒子 */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:99;}
+.particle{position:absolute;font-size:11px;color:var(--gold-l);opacity:0;animation:floatUp 2.2s ease forwards;}
+@keyframes floatUp{0%{opacity:.9;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-90px) scale(.4)}}
+.scene-btm{display:flex;justify-content:center;gap:10px;padding:10px 0;font-size:15px;opacity:.4;color:#8fbe6a;}
+.cb{animation:cb 2s ease-in-out infinite;}
+.cb:nth-child(2){animation-delay:.3s}.cb:nth-child(3){animation-delay:.6s}
+@keyframes cb{0%,100%{opacity:.3}50%{opacity:1}}
+.divider{text-align:center;font-size:11px;letter-spacing:3px;color:var(--soil-l);opacity:.55;margin:14px 0 16px;}
+/* 打字机 */
+.typewriter-char{opacity:0;animation:appear .05s forwards;}
+@keyframes appear{to{opacity:1}}
+</style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<div class="scene">
+  <div class="scene-top">
+    <div class="title-en">✦ grandpa's seeds ✦</div>
+    <div class="title-cn">爷爷的种子</div>
+  </div>
+  <div class="card">
+
+    <!-- S0 开场 -->
+    <div class="step active" id="s0">
+      <div class="chip">📮 一封旧信</div>
+      <div class="prose">这段时间，压力大得喘不过气。<br>算法、内卷、不知道明天在哪里——<br>你翻出了爷爷留下的一个旧铁盒。</div>
+      <div class="prose">里面有一封信，信封上写着一个名字。</div>
+      <div class="field-wrap" style="margin-top:16px;">
+        <div class="field-label">✉ 信封上写的是——</div>
+        <input type="text" id="playerName" placeholder="你的名字" maxlength="12" autocomplete="off"/>
+      </div>
+      <button class="btn" id="openBtn" onclick="openEnvelope()" disabled>📬 打开信封</button>
+    </div>
+
+    <!-- S1 爷爷的信 -->
+    <div class="step" id="s1">
+      <div class="chip">📜 爷爷的信</div>
+      <div class="blockquote" id="s1letter"></div>
+      <div class="seed-pack">
+        <div class="seed-pack-img">🌱</div>
+        <div class="seed-pack-label">— 附：三粒种子 —</div>
+      </div>
+      <div class="prose-sm">信里夹着一张小纸条，上面有几道问题。<br>「答完这些，再来种地。」</div>
+      <button class="btn" onclick="startQ()">📋 看看纸条</button>
+    </div>
+
+    <!-- SQ 选择题 -->
+    <div class="step" id="ssq">
+      <div class="chip" id="sqChip">纸条 · 第一问</div>
+      <div style="font-size:15px;color:var(--ink);line-height:1.8;margin-bottom:16px;" id="sqTitle"></div>
+      <div class="choices" id="sqChoices"></div>
+      <div style="margin-top:18px;display:flex;gap:6px;" id="sqDots"></div>
+    </div>
+
+    <!-- G1 除虫 -->
+    <div class="step" id="sg1">
+      <div class="chip">第一粒种子 · 松土</div>
+      <div class="game-wrap">
+        <div class="game-title">🪱 土里有害虫！</div>
+        <div class="game-sub">点击消灭它们，才能播下种子</div>
+        <div class="gbar-wrap"><div class="gbar-fill" id="g1bar"></div></div>
+        <div class="game-msg">消灭 <b id="g1cnt">0</b> / <b>8</b> 只</div>
+        <canvas id="c1" width="380" height="200"></canvas>
+        <div class="game-success" id="g1win">
+          <div class="sicon">🌱</div><div class="stxt">种子种下了！</div>
+          <div class="ssub">土地准备好了</div>
+          <button class="btn" onclick="nextGame(2)" style="margin-top:8px;">继续 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- G2 接水 -->
+    <div class="step" id="sg2">
+      <div class="chip">第二粒种子 · 浇水</div>
+      <div class="game-wrap">
+        <div class="game-title">💧 种子需要水分！</div>
+        <div class="game-sub">移动花盆接住水滴（鼠标 / 触摸）</div>
+        <div class="gbar-wrap"><div class="gbar-fill" id="g2bar"></div></div>
+        <div class="game-msg">接到 <b id="g2cnt">0</b> / <b>10</b> 滴</div>
+        <canvas id="c2" width="380" height="200"></canvas>
+        <div class="game-success" id="g2win">
+          <div class="sicon">💧</div><div class="stxt">浇水完成！</div>
+          <div class="ssub">种子在土里动了一下</div>
+          <button class="btn" onclick="nextGame(3)" style="margin-top:8px;">继续 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- G3 追光 -->
+    <div class="step" id="sg3">
+      <div class="chip">第三粒种子 · 追光</div>
+      <div class="game-wrap">
+        <div class="game-title">☀️ 幼苗需要阳光！</div>
+        <div class="game-sub">点击叶片，让它转向太阳</div>
+        <div class="gbar-wrap"><div class="gbar-fill" id="g3bar"></div></div>
+        <div class="game-msg" id="g3msg">调整叶片角度</div>
+        <canvas id="c3" width="380" height="200"></canvas>
+        <div class="game-success" id="g3win">
+          <div class="sicon">🌿</div><div class="stxt">幼苗沐浴了阳光！</div>
+          <div class="ssub">它正在慢慢长大……</div>
+          <button class="btn" onclick="startGrowth()" style="margin-top:8px;">等待收获 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SANIM 生长过场 -->
+    <div class="step" id="sanim">
+      <div class="chip">🌿 生长中</div>
+      <div class="farm-wrap">
+        <div class="farm-cvwrap">
+          <div class="sky-bg"></div><div class="moon"></div>
+          <div class="grass-strip"></div><div class="ground"></div>
+          <div class="plot-grid" id="pgrid" style="grid-template-columns:repeat(3,46px);"></div>
+        </div>
+        <div class="pbar-wrap"><div class="pbar-fill" id="pbar"></div></div>
+        <div class="farm-status" id="farmStatus">种子在土里沉睡…</div>
+      </div>
+    </div>
+
+    <!-- SLETTER 信件 -->
+    <div class="step" id="sletter">
+      <div class="chip">💌 秘籍解锁了</div>
+      <div class="letter-head">
+        <div class="letter-seal">📜</div>
+        <div>
+          <div class="letter-from">来自 · 爷爷藏在种子里的秘籍</div>
+          <div class="letter-to" id="letterTo">孩子，展信佳</div>
+        </div>
+      </div>
+      <div class="letter-body" id="letterBody"></div>
+      <div class="letter-foot" id="letterFoot" style="display:none;">
+        — 爱你的爷爷<br>
+        <span style="font-size:12px;opacity:.65;">写于某个秋天的傍晚</span>
+      </div>
+      <button class="btn btn-ghost" onclick="restart()" style="margin-top:22px;">🔄 重新种一次</button>
+    </div>
+
+  </div>
+  <div class="scene-btm">
+    <span class="cb">🌾</span><span class="cb">🌻</span><span class="cb">🌾</span>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// 选择题数据（6道）
+// ══════════════════════════════════════════
+const QS = [
+  {
+    q:'这阵子，最消耗你精力的是哪一块？',
+    opts:['工作或学业的压力','人际关系与沟通','对未来感到迷茫','身体或精神上的疲惫'],
+    key:'drain'
+  },
+  {
+    q:'面对压力，你通常第一反应是？',
+    opts:['硬撑着继续做','躲进手机里','找人说说话','什么都不想做，只发呆'],
+    key:'react'
+  },
+  {
+    q:'现在这一刻，你内心最深处想要的是？',
+    opts:['被人好好看见一次','得到一个明确的方向','什么都不想，只想好好休息','知道自己没有走错路'],
+    key:'need'
+  },
+  {
+    q:'如果烦恼是一种天气，它更像——',
+    opts:['连绵阴雨，下个没完','压得透不过气的闷热','说来就来的雷阵雨','大雾弥漫，什么都看不清'],
+    key:'weather'
+  },
+  {
+    q:'你上一次真正放松下来，是什么时候？',
+    opts:['好几个月前了','大概上周吧','昨天还好好睡了一觉','已经记不得了'],
+    key:'rest'
+  },
+  {
+    q:'如果爷爷现在就在你旁边，你最想对他说——',
+    opts:['我好累，不知道能撑多久','我不知道自己在为什么努力','我只是想有人陪着我坐一会儿','我怕我让大家失望了'],
+    key:'words'
+  },
+];
+
+// ══════════════════════════════════════════
+// 信件拼接素材库（星露谷 / 韩剧爷爷语气）
+// ══════════════════════════════════════════
+const LETTER = {
+
+  // 开头：永远叫名字
+  open: (name) => `${name}，\n\n爷爷等这封信被打开，等了很久了。`,
+
+  // 段落1：根据 drain（烦恼来源）
+  drain: {
+    '工作或学业的压力':
+      `你知道吗，爷爷年轻的时候也种过一块地，从天亮忙到天黑，腰都直不起来。\n有一天我问老村长：这地到底什么时候才能歇？\n他说：地不需要你一直弯着腰，它需要你偶尔站起来看看远处。\n你也是。`,
+    '人际关系与沟通':
+      `人和人之间，就像两棵挨得太近的树，有时候会争同一片阳光。\n不是谁的错，只是都在努力活着。\n爷爷见过很多这样的事，最后那些树都慢慢找到了自己的方向。`,
+    '对未来感到迷茫':
+      `爷爷第一次种地的时候，也不知道种子会不会发芽。\n没有人告诉我答案，我只是把它放进土里，然后每天来看一眼。\n你现在做的事，和那时候爷爷做的，其实是一样的。`,
+    '身体或精神上的疲惫':
+      `土地累了，会裂缝。人累了，会沉默。\n这不是软弱，这是在告诉你该停下来歇一歇了。\n庄稼不会因为你休息一天就不长，你也不会。`,
+  },
+
+  // 段落2：根据 react（应对方式）
+  react: {
+    '硬撑着继续做':
+      `爷爷知道你是个不服输的孩子。\n但你有没有发现，最好的庄稼，从来不是催出来的——\n它是等出来的。`,
+    '躲进手机里':
+      `躲一会儿没有关系。爷爷累的时候，会坐在田埂上发一会儿呆。\n但你知道吗，田埂上的风，和地里的风，是不一样的。\n偶尔出来透口气，比一直躲着要好。`,
+    '找人说说话':
+      `能找人说话，是很了不起的事。\n爷爷那个年代，很多人把话咽进肚子里，结果憋出了病。\n你没有，这让爷爷很放心。`,
+    '什么都不想做，只发呆':
+      `发呆不是浪费时间。\n爷爷有时候会对着田里站半个小时，什么都不做。\n那半个小时，是爷爷把自己还给自己的时间。\n你也需要这样的时间。`,
+  },
+
+  // 段落3：根据 need（内心需要）
+  need: {
+    '被人好好看见一次':
+      `爷爷看见你了。\n不是你成绩好不好，不是你赚多少钱——\n就是你这个人，爷爷看见了。`,
+    '得到一个明确的方向':
+      `爷爷没有答案给你，但爷爷告诉你一件事：\n种子不需要知道自己会长成什么，它只需要往下扎根。\n根扎稳了，方向自然就来了。`,
+    '什么都不想，只想好好休息':
+      `那就去休息吧。\n爷爷允许你休息。\n不是所有的停下来都是放弃，有些停下来，是为了走得更远。`,
+    '知道自己没有走错路':
+      `你有没有走错路，爷爷不知道。\n但爷爷知道一件事：一个愿意把烦恼种进土里的人，心还没有死。\n心还在，路就还在。`,
+  },
+
+  // 段落4：根据 weather（烦恼的感受）
+  weather: {
+    '连绵阴雨，下个没完':
+      `雨季是有尽头的。爷爷种了一辈子地，从来没见过一场雨下到地老天荒。\n它总会停的。`,
+    '压得透不过气的闷热':
+      `闷热的天气，庄稼都会蔫。但蔫了不等于死了。\n等一场雷雨过去，你会发现它们又挺起来了。`,
+    '说来就来的雷阵雨':
+      `雷阵雨来得快，走得也快。\n爷爷最不怕这种天，因为雨停之后，土地最香。`,
+    '大雾弥漫，什么都看不清':
+      `雾大的时候，爷爷就不往远处看，只看脚下一步。\n一步一步走，雾自然就散了。`,
+  },
+
+  // 段落5：根据 words（想对爷爷说的话）——最私密，要最暖
+  words: {
+    '我好累，不知道能撑多久':
+      `那就先撑到今天就好。\n不用想明天，不用想下个月。\n就今天，就这一刻，你已经做得够多了。`,
+    '我不知道自己在为什么努力':
+      `爷爷年轻的时候，也问过自己同样的问题。\n后来爷爷想通了：不是每一粒种子都需要知道为什么发芽。\n发芽，是它本来就会做的事。`,
+    '我只是想有人陪着我坐一会儿':
+      `爷爷陪着你。\n就算隔着这封信，就算隔着那么多年，爷爷还是陪着你坐在这里。\n你不是一个人。`,
+    '我怕我让大家失望了':
+      `爷爷从来没有失望过。\n你知道什么时候爷爷最骄傲吗——\n就是你打开这封信的这一刻。`,
+  },
+
+  // 结尾：根据 rest（多久没休息）
+  close: {
+    '好几个月前了':
+      `\n今晚，先好好睡一觉。\n其他的事，明天再说。\n\n爷爷爱你。`,
+    '大概上周吧':
+      `\n你比爷爷想象的，要坚强得多。\n记得偶尔停下来，看看这一路走过来的风景。\n\n爷爷爱你。`,
+    '昨天还好好睡了一觉':
+      `\n好。睡得着，说明心里还有一块地方是安稳的。\n守住那块地方。\n\n爷爷爱你。`,
+    '已经记不得了':
+      `\n今晚，这是爷爷唯一的要求——好好睡一觉。\n什么都可以等到明天，但休息不行。\n\n爷爷爱你。`,
+  },
+};
+
+function buildLetter(name, answers) {
+  const p = (obj, key) => obj[key] || Object.values(obj)[0];
+  return [
+    LETTER.open(name),
+    '\n',
+    p(LETTER.drain,  answers.drain),
+    '\n\n',
+    p(LETTER.react,  answers.react),
+    '\n\n',
+    p(LETTER.need,   answers.need),
+    '\n\n',
+    p(LETTER.weather,answers.weather),
+    '\n\n',
+    p(LETTER.words,  answers.words),
+    p(LETTER.close,  answers.rest),
+  ].join('');
+}
+
+// ══════════════════════════════════════════
+// 状态
+// ══════════════════════════════════════════
+let playerName = '';
+const answers = {};
+let curQ = 0;
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function showStep(id){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById(id) || document.getElementById('s'+id);
+  if(el) el.classList.add('active');
+}
+
+function spawnParticles(){
+  const c=document.getElementById('particles');
+  const sym=['✦','·','✿','○','✧','☽','✸'];
+  for(let i=0;i<20;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='particle';
+      p.textContent=sym[Math.floor(Math.random()*sym.length)];
+      p.style.left=(20+Math.random()*60)+'%';
+      p.style.top=(30+Math.random()*30)+'%';
+      p.style.animationDelay=(Math.random()*.7)+'s';
+      c.appendChild(p);setTimeout(()=>p.remove(),2800);
+    },i*60);
+  }
+}
+
+// ══════════════════════════════════════════
+// S0 开场
+// ══════════════════════════════════════════
+document.getElementById('playerName').addEventListener('input',function(){
+  playerName=this.value.trim();
+  document.getElementById('openBtn').disabled=!playerName;
+});
+document.getElementById('playerName').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&playerName)openEnvelope();
+});
+
+function openEnvelope(){
+  if(!playerName)return;
+  document.getElementById('s1letter').innerHTML=
+    `「${playerName}，<br><br>
+    你找到这封信，说明你最近一定很难熬。<br>
+    爷爷知道这个时代不容易，什么都在变，<br>
+    但有些东西从来没变过——<br><br>
+    土地还在，种子还在。<br><br>
+    信里附了三粒种子，还有一张问题纸条。<br>
+    把纸条答完，种子种下去，<br>
+    等它发芽，你就明白了。」`;
+  showStep('s1');
+}
+
+// ══════════════════════════════════════════
+// 选择题
+// ══════════════════════════════════════════
+function startQ(){ curQ=0; showStep('ssq'); renderQ(0); }
+
+function renderDots(cur){
+  const con=document.getElementById('sqDots');con.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText=`width:8px;height:8px;border:2px solid var(--soil-l);`+
+      (i<cur?'background:var(--grass);':(i===cur?'background:var(--gold);':'background:transparent;'));
+    con.appendChild(d);
+  });
+}
+
+function renderQ(idx){
+  const q=QS[idx];
+  const nums=['一','二','三','四','五','六'];
+  document.getElementById('sqChip').textContent=`纸条 · 第${nums[idx]}问`;
+  document.getElementById('sqTitle').textContent=q.q;
+  renderDots(idx);
+  const con=document.getElementById('sqChoices');con.innerHTML='';
+  ['A','B','C','D'].forEach((k,i)=>{
+    const b=document.createElement('button');b.className='choice-btn';
+    b.innerHTML=`<span class="ckey">${k}</span>${q.opts[i]}`;
+    b.onclick=()=>{
+      document.querySelectorAll('.choice-btn').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+      answers[q.key]=q.opts[i];
+      setTimeout(()=>{
+        curQ++;
+        if(curQ<QS.length) renderQ(curQ);
+        else { nextGame(1); }
+      },380);
+    };
+    con.appendChild(b);
+  });
+}
+
+// ══════════════════════════════════════════
+// 游戏入口
+// ══════════════════════════════════════════
+function nextGame(n){
+  if(n===1){showStep('sg1');setTimeout(()=>initGame1(),80);}
+  else if(n===2){showStep('sg2');setTimeout(()=>initGame2(),80);}
+  else if(n===3){showStep('sg3');setTimeout(()=>initGame3(),80);}
+}
+
+// ══════════════════════════════════════════
+// G1：除虫
+// ══════════════════════════════════════════
+function initGame1(){
+  const cv=document.getElementById('c1'),ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,TOTAL=8;
+  let killed=0,done=false;
+  const bugs=[],stars=[];
+
+  function spawnBug(){
+    if(done||bugs.length>=5)return;
+    bugs.push({
+      x:44+Math.random()*(W-88),y:32+Math.random()*(H-64),
+      phase:0,speed:.04+Math.random()*.04,
+      size:13+Math.floor(Math.random()*6),
+      col:['#8aaa30','#aa6020','#cc4444','#6688aa'][Math.floor(Math.random()*4)],
+      dead:false,dt:0
+    });
+  }
+  for(let i=0;i<3;i++)spawnBug();
+  const si=setInterval(()=>{if(!done&&bugs.length<5)spawnBug();},1100);
+
+  function drawBg(){
+    ctx.fillStyle='#3e2208';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#4a2e14';
+    for(let y=0;y<H;y+=18)for(let x=(Math.floor(y/18)%2)*22;x<W;x+=44)ctx.fillRect(x,y,20,15);
+  }
+  function drawBug(b){
+    ctx.save();ctx.translate(b.x,b.y);
+    ctx.fillStyle=b.col;
+    ctx.beginPath();ctx.ellipse(0,0,b.size,b.size*.55,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(b.size*.75,0,b.size*.32,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(b.size*.88,-b.size*.08,2.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#111';ctx.beginPath();ctx.arc(b.size*.9,-b.size*.08,1.2,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=b.col;ctx.lineWidth=1.5;
+    const lp=Math.sin(b.phase)*4;
+    [-.35,0,.35].forEach(oy=>{
+      ctx.beginPath();ctx.moveTo(-b.size*.25,oy*b.size*.5);ctx.lineTo(-b.size*.7,oy*b.size*.5+lp);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(b.size*.2,oy*b.size*.5);ctx.lineTo(b.size*.6,oy*b.size*.5-lp);ctx.stroke();
+    });
+    ctx.restore();
+  }
+  function drawDeadBug(b){
+    ctx.save();ctx.translate(b.x,b.y);ctx.rotate(Math.PI*.5);
+    ctx.globalAlpha=Math.max(0,1-b.dt/14);
+    ctx.fillStyle='#888';ctx.beginPath();ctx.ellipse(0,0,b.size,b.size*.55,0,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+  function drawStar(s){
+    ctx.save();ctx.translate(s.x,s.y);
+    ctx.strokeStyle='#f0c040';ctx.lineWidth=2;ctx.globalAlpha=1-s.t/8;
+    const r=6+s.t*2;
+    for(let i=0;i<4;i++){const a=Math.PI/4*i;ctx.beginPath();ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);ctx.lineTo(Math.cos(a+Math.PI)*r,Math.sin(a+Math.PI)*r);ctx.stroke();}
+    ctx.restore();
+  }
+
+  let raf;
+  function loop(){
+    ctx.clearRect(0,0,W,H);drawBg();
+    bugs.forEach(b=>b.dead?(b.dt++,drawDeadBug(b)):(b.phase+=b.speed,drawBug(b)));
+    stars.forEach(s=>{s.t++;drawStar(s);});
+    for(let i=bugs.length-1;i>=0;i--)if(bugs[i].dead&&bugs[i].dt>14)bugs.splice(i,1);
+    for(let i=stars.length-1;i>=0;i--)if(stars[i].t>8)stars.splice(i,1);
+    raf=requestAnimationFrame(loop);
+  }
+  loop();
+
+  cv.onclick=function(e){
+    if(done)return;
+    const r=cv.getBoundingClientRect();
+    const mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
+    for(const b of bugs){
+      if(b.dead)continue;
+      if(Math.abs(mx-b.x)<b.size*1.3&&Math.abs(my-b.y)<b.size){
+        b.dead=true;stars.push({x:b.x,y:b.y,t:0});killed++;
+        document.getElementById('g1cnt').textContent=killed;
+        document.getElementById('g1bar').style.width=(killed/TOTAL*100)+'%';
+        if(killed>=TOTAL){done=true;clearInterval(si);cancelAnimationFrame(raf);spawnParticles();document.getElementById('g1win').classList.add('show');}
+        break;
+      }
+    }
+  };
+}
+
+// ══════════════════════════════════════════
+// G2：接水
+// ══════════════════════════════════════════
+function initGame2(){
+  const cv=document.getElementById('c2'),ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,TOTAL=10;
+  let caught=0,done=false,potX=W/2,dt=0;
+  const drops=[],splashes=[];
+
+  function spawnDrop(){drops.push({x:20+Math.random()*(W-40),y:-12,spd:2.8+Math.random()*2.2});}
+
+  function drawBg(){
+    ctx.fillStyle='#0f1a2a';ctx.fillRect(0,0,W,H*.52);
+    ctx.fillStyle='#3e2208';ctx.fillRect(0,H*.52,W,H*.48);
+    // 云
+    ctx.fillStyle='rgba(180,210,240,.22)';
+    [[70,28,32],[190,18,26],[310,32,30]].forEach(([cx,cy,r])=>{
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(cx+r*.6,cy+4,r*.7,0,Math.PI*2);ctx.fill();
+    });
+  }
+  function drawPot(){
+    const pw=60,px=potX;
+    ctx.fillStyle='#904e28';
+    ctx.beginPath();ctx.moveTo(px-pw/2-4,H-42);ctx.lineTo(px+pw/2+4,H-42);ctx.lineTo(px+pw/2,H-22);ctx.lineTo(px-pw/2,H-22);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#b06030';ctx.fillRect(px-pw/2-6,H-47,pw+12,6);
+    ctx.fillStyle='#3e2208';ctx.fillRect(px-pw/2+2,H-40,pw-4,14);
+    ctx.strokeStyle='#5da64e';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(px,H-38);ctx.lineTo(px,H-54);ctx.stroke();
+    ctx.fillStyle='#5da64e';
+    ctx.beginPath();ctx.ellipse(px-6,H-53,7,4,-.4,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(px+6,H-51,7,4,.4,0,Math.PI*2);ctx.fill();
+  }
+  function drawDrop(d){
+    ctx.fillStyle='#5aaade';
+    ctx.beginPath();ctx.arc(d.x,d.y,5.5,Math.PI,0);ctx.lineTo(d.x,d.y+9);ctx.closePath();ctx.fill();
+  }
+  function drawSplash(s){
+    ctx.strokeStyle='#5aaade';ctx.lineWidth=1.5;ctx.globalAlpha=1-s.t/7;
+    for(let i=0;i<6;i++){const a=Math.PI/3*i;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x+Math.cos(a)*10,s.y+Math.sin(a)*7);ctx.stroke();}
+    ctx.globalAlpha=1;
+  }
+
+  let raf2;
+  function loop2(){
+    ctx.clearRect(0,0,W,H);drawBg();
+    dt++;if(dt%38===0&&drops.length<7&&!done)spawnDrop();
+    drops.forEach(d=>d.y+=d.spd);
+    for(let i=drops.length-1;i>=0;i--){
+      const d=drops[i];
+      if(d.y>H-47&&d.y<H-20&&d.x>potX-36&&d.x<potX+36){
+        splashes.push({x:d.x,y:H-47,t:0});drops.splice(i,1);
+        caught++;document.getElementById('g2cnt').textContent=caught;
+        document.getElementById('g2bar').style.width=(caught/TOTAL*100)+'%';
+        if(caught>=TOTAL){done=true;cancelAnimationFrame(raf2);spawnParticles();document.getElementById('g2win').classList.add('show');}
+      }else if(d.y>H)drops.splice(i,1);
+    }
+    drops.forEach(d=>drawDrop(d));
+    for(let i=splashes.length-1;i>=0;i--){drawSplash(splashes[i]);splashes[i].t++;if(splashes[i].t>7)splashes.splice(i,1);}
+    drawPot();
+    raf2=requestAnimationFrame(loop2);
+  }
+  loop2();
+
+  function movePot(e){
+    if(done)return;
+    const r=cv.getBoundingClientRect();
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    potX=Math.max(36,(cx-r.left)*(W/r.width));potX=Math.min(W-36,potX);
+  }
+  cv.addEventListener('mousemove',movePot);
+  cv.addEventListener('touchmove',e=>{e.preventDefault();movePot(e);},{passive:false});
+}
+
+// ══════════════════════════════════════════
+// G3：追光
+// ══════════════════════════════════════════
+function initGame3(){
+  const cv=document.getElementById('c3'),ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,N=5;
+  let score=0,done=false;
+  const sunX=W/2+60,sunY=38;
+
+  const leaves=Array.from({length:N},(_,i)=>({
+    bx:55+i*68,by:H-40,
+    angle:Math.random()*Math.PI*2,
+    target:Math.atan2(sunY-(H-90),sunX-(55+i*68)),
+    aligned:false
+  }));
+
+  function drawSun(){
+    const g=ctx.createRadialGradient(sunX,sunY,4,sunX,sunY,36);
+    g.addColorStop(0,'rgba(255,220,50,.8)');g.addColorStop(1,'rgba(255,220,50,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(sunX,sunY,36,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#f0c040';ctx.beginPath();ctx.arc(sunX,sunY,16,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#e8a020';ctx.lineWidth=2;ctx.stroke();
+    ctx.strokeStyle='#f0c040';ctx.lineWidth=2;
+    for(let i=0;i<8;i++){const a=Math.PI/4*i;ctx.beginPath();ctx.moveTo(sunX+Math.cos(a)*20,sunY+Math.sin(a)*20);ctx.lineTo(sunX+Math.cos(a)*30,sunY+Math.sin(a)*30);ctx.stroke();}
+  }
+  function drawLeaf(l){
+    ctx.save();ctx.translate(l.bx,l.by-50);
+    // 茎
+    ctx.strokeStyle='#5a8a3a';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,10);ctx.stroke();
+    ctx.restore();
+    ctx.save();ctx.translate(l.bx,l.by-50);ctx.rotate(l.angle);
+    const col=l.aligned?'#7aca50':'#4a8a2a';
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.ellipse(18,0,20,9,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(-18,0,20,9,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=l.aligned?'#a0e060':'#2a6010';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(-20,0);ctx.lineTo(20,0);ctx.stroke();
+    if(l.aligned){
+      ctx.strokeStyle='#ffe840';ctx.lineWidth=1;ctx.globalAlpha=.55;
+      ctx.beginPath();ctx.ellipse(18,0,24,13,0,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.ellipse(-18,0,24,13,0,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  let raf3;
+  function loop3(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#101e10';ctx.fillRect(0,0,W,H-30);
+    ctx.fillStyle='#3a8a2a';ctx.fillRect(0,H-34,W,8);
+    ctx.fillStyle='#4a2e12';ctx.fillRect(0,H-26,W,26);
+    drawSun();
+    leaves.forEach(l=>{
+      if(l.aligned){
+        ctx.save();ctx.globalAlpha=.3;ctx.strokeStyle='#ffe840';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+        ctx.beginPath();ctx.moveTo(sunX,sunY);ctx.lineTo(l.bx,l.by-50);ctx.stroke();
+        ctx.setLineDash([]);ctx.restore();
+      }
+      drawLeaf(l);
+    });
+    raf3=requestAnimationFrame(loop3);
+  }
+  loop3();
+
+  cv.onclick=function(e){
+    if(done)return;
+    const r=cv.getBoundingClientRect();
+    const mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
+    leaves.forEach(l=>{
+      if(l.aligned)return;
+      if(Math.abs(mx-l.bx)<32&&Math.abs(my-(l.by-50))<22){
+        l.angle=l.target;l.aligned=true;score++;
+        document.getElementById('g3bar').style.width=(score/N*100)+'%';
+        document.getElementById('g3msg').textContent=`${score} / ${N} 片叶子对准了太阳 ☀️`;
+        if(score>=N){done=true;cancelAnimationFrame(raf3);spawnParticles();document.getElementById('g3win').classList.add('show');}
+      }
+    });
+  };
+}
+
+// ══════════════════════════════════════════
+// 生长过场
+// ══════════════════════════════════════════
+async function startGrowth(){
+  showStep('sanim');
+  const grid=document.getElementById('pgrid'),status=document.getElementById('farmStatus'),pbar=document.getElementById('pbar');
+  grid.innerHTML='';
+  const cells=[];
+  for(let i=0;i<3;i++){
+    const cell=document.createElement('div');cell.className='pcell';
+    const seed=document.createElement('div');seed.className='pseed';
+    const sprout=document.createElement('div');sprout.className='psprout';
+    sprout.innerHTML='<div class="pleaf"></div><div class="pleaf r"></div>';
+    cell.appendChild(seed);cell.appendChild(sprout);grid.appendChild(cell);
+    cells.push({cell,seed,sprout});
+  }
+  const steps=[
+    {msg:'种子在土里沉睡…',p:10},
+    {msg:'第一场雨落下来了…',p:28,a:()=>{cells[0].cell.classList.add('tilled');cells[0].seed.classList.add('planted');}},
+    {msg:'你的烦恼开始分解，变成养分…',p:48,a:()=>{cells[1].cell.classList.add('tilled');cells[1].seed.classList.add('planted');}},
+    {msg:'第三粒种子也动了…',p:65,a:()=>{cells[2].cell.classList.add('tilled');cells[2].seed.classList.add('planted');}},
+    {msg:'它们在往上长……',p:84,a:()=>{cells.forEach(c=>{c.seed.style.opacity='0';c.sprout.classList.add('grown');});spawnParticles();}},
+    {msg:'发芽了。🌱\n秘籍解锁了。',p:100},
+  ];
+  for(const s of steps){status.textContent=s.msg;pbar.style.width=s.p+'%';if(s.a)s.a();await sleep(1100);}
+  await sleep(700);
+  showLetter();
+}
+
+// ══════════════════════════════════════════
+// 信件（本地拼接 + 打字机效果）
+// ══════════════════════════════════════════
+function showLetter(){
+  showStep('sletter');
+  document.getElementById('letterTo').textContent=`${playerName}，展信佳`;
+  const text=buildLetter(playerName,answers);
+  typewrite(document.getElementById('letterBody'),text,()=>{
+    document.getElementById('letterFoot').style.display='block';
+  });
+}
+
+function typewrite(el,text,onDone){
+  el.textContent='';
+  let i=0;
+  function next(){
+    if(i>=text.length){if(onDone)onDone();return;}
+    el.textContent+=text[i];i++;
+    setTimeout(next,i<30?60:28);
+  }
+  next();
+}
+
+// ══════════════════════════════════════════
+// 重置
+// ══════════════════════════════════════════
+function restart(){
+  playerName='';curQ=0;
+  Object.keys(answers).forEach(k=>delete answers[k]);
+  document.getElementById('playerName').value='';
+  document.getElementById('openBtn').disabled=true;
+  document.getElementById('letterBody').textContent='';
+  document.getElementById('letterFoot').style.display='none';
+  ['g1win','g2win','g3win'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  showStep('s0');
+}
+
+showStep('s0');
+</script>
+</body>
+</html>
