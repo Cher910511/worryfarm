@@ -725,7 +725,7 @@ function renderQ(idx){
   document.getElementById('sqChip').textContent=`纸条 · 第${nums[idx]}问`;
   document.getElementById('sqTitle').textContent=q.q;
   renderDots(idx);
-  const con=document.getElementById('sqChoices');con.innerHTML='';
+  const con=document.getElementById('sqChoices');con.innerHTML='';con.style.pointerEvents='auto';
   ['A','B','C','D'].forEach((k,i)=>{
     const b=document.createElement('button');b.className='choice-btn';
     b.innerHTML=`<span class="ckey">${k}</span>${q.opts[i]}`;
