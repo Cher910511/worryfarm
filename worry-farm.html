@@ -200,86 +200,93 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
 ══════════════════ */
 .letter-wrap{
   position:relative;
-  background:linear-gradient(170deg,#fdf3dc,#f5e6c0);
-  border:2px solid #c8a060;
-  box-shadow:inset 0 0 40px rgba(200,160,50,.07),4px 4px 0 #050500;
-  padding:22px 24px 20px;
+  background:linear-gradient(175deg,#fef7e8 0%,#f8ebd0 30%,#f3e2c0 100%);
+  border:3px double #b89360;
+  outline:1px solid #d4c0a0;
+  outline-offset:-6px;
+  box-shadow:
+    inset 0 0 80px rgba(180,140,80,.06),
+    inset 0 0 3px rgba(160,120,60,.08),
+    5px 5px 0 #050500,
+    0 0 0 1px rgba(180,140,80,.2);
+  padding:26px 28px 22px;
   overflow:hidden;
-  /* 高度固定，内容渐显 */
 }
-/* 横线 */
+/* 纸张纹理 */
 .letter-wrap::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(transparent,transparent 31px,rgba(107,76,42,.07) 31px,rgba(107,76,42,.07) 32px);
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    repeating-linear-gradient(transparent,transparent 32px,rgba(160,120,60,.08) 32px,rgba(160,120,60,.08) 33px),
+    radial-gradient(ellipse at 20% 80%,rgba(180,140,80,.06) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 20%,rgba(200,160,80,.04) 0%,transparent 40%);
 }
 /* 左侧红线 */
 .letter-wrap::after{
-  content:'';position:absolute;top:0;bottom:0;left:52px;pointer-events:none;
-  width:1px;background:rgba(180,80,60,.18);
+  content:'';position:absolute;top:18px;bottom:18px;left:48px;pointer-events:none;z-index:0;
+  width:2px;
+  background:linear-gradient(180deg,transparent,rgba(185,70,50,.25) 8%,rgba(185,70,50,.25) 92%,transparent);
+  box-shadow:1px 0 0 rgba(185,70,50,.08);
 }
 /* 折痕 */
 .fold-mark{
-  position:absolute;left:0;right:0;height:1px;pointer-events:none;
-  background:linear-gradient(90deg,transparent 5%,rgba(107,76,42,.12) 50%,transparent 95%);
+  position:absolute;left:0;right:0;height:1px;pointer-events:none;z-index:0;
+  background:linear-gradient(90deg,transparent 3%,rgba(160,120,60,.15) 20%,rgba(160,120,60,.08) 50%,rgba(160,120,60,.15) 80%,transparent 97%);
+}
+.fold-mark::after{
+  content:'';position:absolute;top:-8px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 3%,rgba(160,120,60,.04) 50%,transparent 97%);
 }
 
 .letter-head{
-  display:flex;align-items:center;gap:14px;
-  margin-bottom:16px;padding-bottom:13px;
-  border-bottom:1px dashed rgba(107,76,42,.28);
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:20px;padding-bottom:14px;
+  border-bottom:1px dashed rgba(160,120,60,.3);
   position:relative;z-index:1;
-}
-.letter-seal{
-  flex-shrink:0;width:50px;height:50px;
-  background:radial-gradient(circle,#b82818 55%,#801408);
-  border:3px solid #601008;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;
-  box-shadow:2px 2px 0 #050500,inset 0 1px 3px rgba(255,200,180,.25);
 }
 .letter-meta{flex:1;}
-.letter-from-line{font-size:11px;color:var(--ink-l);letter-spacing:1px;opacity:.8;}
-.letter-to-line{font-size:18px;color:var(--ink);margin-top:3px;letter-spacing:1px;}
+.letter-from-line{font-size:11px;color:#8b6d4b;letter-spacing:2px;opacity:.75;}
+.letter-to-line{font-size:19px;color:var(--ink);margin-top:4px;letter-spacing:2px;font-weight:600;}
 
-/* 信件内容渐显：高度固定，opacity从0→1 */
 .letter-body-wrap{
   position:relative;z-index:1;
+  padding-left:16px;
   opacity:0;
-  transition:opacity 1.2s ease;
+  transition:opacity 1.4s ease;
 }
 .letter-body-wrap.revealed{opacity:1;}
 
 .letter-body{
-  font-size:15px;color:var(--ink);
-  line-height:2.2;
+  font-size:15px;color:#3a2818;
+  line-height:2.3;
   white-space:pre-wrap;
+  letter-spacing:.3px;
 }
 
 .letter-sign{
-  margin-top:16px;padding-top:12px;
-  border-top:1px dashed rgba(107,76,42,.28);
-  display:flex;align-items:flex-end;justify-content:flex-end;gap:14px;
+  margin-top:20px;padding-top:14px;
+  border-top:1px dashed rgba(160,120,60,.3);
+  display:flex;align-items:flex-end;justify-content:flex-end;gap:16px;
   position:relative;z-index:1;
 }
-.letter-sign-text{text-align:right;font-size:14px;color:var(--ink-l);line-height:2;}
+.letter-sign-text{text-align:right;font-size:14px;color:#6b4c2a;line-height:2.2;}
 .letter-sign-stamp{
-  width:42px;height:42px;
-  background:radial-gradient(circle,rgba(176,40,24,.12),rgba(128,20,8,.04));
-  border:2px solid rgba(176,40,24,.28);border-radius:50%;
+  width:46px;height:46px;
+  background:radial-gradient(circle at 50% 45%,rgba(185,50,28,.18),rgba(140,25,12,.06));
+  border:2px solid rgba(185,50,28,.35);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:10px;color:rgba(176,40,24,.45);letter-spacing:.5px;
-  transform:rotate(-12deg);
+  font-size:11px;color:rgba(185,50,28,.55);letter-spacing:1px;
+  transform:rotate(-14deg);
   flex-shrink:0;
+  box-shadow:inset 0 0 8px rgba(185,50,28,.06);
 }
 
-/* 信件出场动画 */
 .letter-scene{display:none;}
 .letter-scene.show{
   display:block;
   animation:letterDrop .7s cubic-bezier(.2,.9,.3,1);
 }
 @keyframes letterDrop{
-  from{opacity:0;transform:translateY(-18px) scale(.97)}
+  from{opacity:0;transform:translateY(-22px) scale(.96)}
   to{opacity:1;transform:translateY(0) scale(1)}
 }
 
@@ -329,7 +336,7 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
   <!-- 第一幕：压力 -->
   <div id="intro-act1" style="display:flex;flex-direction:column;align-items:center;gap:0;">
     <div class="intro-line" id="il1">这段时间，压力大得喘不过气。</div>
-    <div class="intro-line dim" id="il2">算法、内卷、不知道明天在哪里——</div>
+    <div class="intro-line dim" id="il2">焦虑、内卷，不知道明天在哪里——</div>
   </div>
   <!-- 第二幕：铁盒 -->
   <div id="intro-act2" style="display:none;flex-direction:column;align-items:center;gap:0;">
@@ -457,7 +464,6 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
           <div class="fold-mark" style="top:32%"></div>
           <div class="fold-mark" style="top:65%"></div>
           <div class="letter-head">
-            <div class="letter-seal">📜</div>
             <div class="letter-meta">
               <div class="letter-from-line">来自 · 爷爷藏在种子里的秘籍</div>
               <div class="letter-to-line" id="letterTo">孩子，展信佳</div>
@@ -488,7 +494,8 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
 // ══════════════════════════
 // 开场动画（三幕）
 // ══════════════════════════
-let introAct = 1; // 当前幕次
+let introAct = 1;
+let introReady = false;
 
 async function runIntro(){
   await sleep(400);
@@ -497,20 +504,20 @@ async function runIntro(){
   document.getElementById('il2').classList.add('show');
   await sleep(700);
   document.getElementById('introHint').classList.add('show');
+  introReady = true;
 }
 runIntro();
 
 async function introClick(){
+  if(!introReady)return;
   if(introAct===1){
-    // 切到第二幕
+    introReady = false;
     introAct=2;
     document.getElementById('introHint').classList.remove('show');
-    // 淡出第一幕
     const a1=document.getElementById('intro-act1');
     a1.style.transition='opacity .5s';a1.style.opacity='0';
     await sleep(500);
     a1.style.display='none';
-    // 显示第二幕
     const a2=document.getElementById('intro-act2');
     a2.style.display='flex';
     await sleep(100);
@@ -521,8 +528,9 @@ async function introClick(){
     document.getElementById('il5').classList.add('show');
     await sleep(500);
     document.getElementById('introHint').classList.add('show');
+    introReady = true;
   } else if(introAct===2){
-    // 切到第三幕（输入名字）
+    introReady = false;
     introAct=3;
     document.getElementById('introHint').classList.remove('show');
     const a2=document.getElementById('intro-act2');
@@ -533,11 +541,10 @@ async function introClick(){
     a3.style.display='flex';a3.style.opacity='0';
     a3.style.transition='opacity .6s';
     await sleep(50);a3.style.opacity='1';
-    // 阻止这一幕的点击冒泡到intro-screen
     a3.onclick=(e)=>e.stopPropagation();
     setTimeout(()=>document.getElementById('playerName').focus(),300);
+    introReady = true;
   }
-  // act3 不响应点击，由按钮触发 dismissIntro
 }
 
 function dismissIntro(){
@@ -739,43 +746,155 @@ function nextGame(n){
 // ══════════════════════════
 function initGame1(){
   const cv=document.getElementById('c1'),ctx=cv.getContext('2d');
-  // 手机端缩放
   const maxW=Math.min(380,document.querySelector('.card').clientWidth-32);
   cv.style.width=maxW+'px';cv.style.height=Math.round(maxW*200/380)+'px';
   const W=cv.width,H=cv.height,TOTAL=8;
   let killed=0,done=false;
   const bugs=[],stars=[];
+  const COLORS=['#ff8c69','#ffb347','#87ceeb','#c3a0e8','#77dd77','#ff9eb5'];
+
   function spawnBug(){
     if(done||bugs.length>=5)return;
-    bugs.push({x:44+Math.random()*(W-88),y:32+Math.random()*(H-64),phase:0,speed:.04+Math.random()*.04,size:13+Math.floor(Math.random()*6),col:['#8aaa30','#aa6020','#cc4444','#6688aa'][Math.floor(Math.random()*4)],dead:false,dt:0});
+    bugs.push({
+      x:44+Math.random()*(W-88),y:32+Math.random()*(H-64),
+      phase:0,speed:.04+Math.random()*.04,
+      size:16+Math.floor(Math.random()*8),
+      col:COLORS[Math.floor(Math.random()*COLORS.length)],
+      dead:false,dt:0
+    });
   }
+
   // 延迟生成，避免一开始就堆满
   setTimeout(()=>spawnBug(),300);
   setTimeout(()=>spawnBug(),900);
   const si=setInterval(()=>{if(!done&&bugs.length<4)spawnBug();},1400);
-  function drawBg(){ctx.fillStyle='#3e2208';ctx.fillRect(0,0,W,H);ctx.fillStyle='#4a2e14';for(let y=0;y<H;y+=18)for(let x=(Math.floor(y/18)%2)*22;x<W;x+=44)ctx.fillRect(x,y,20,15);}
+
+  function drawBg(){
+    ctx.fillStyle='#3e2208';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#4a2e14';
+    for(let y=0;y<H;y+=18)for(let x=(Math.floor(y/18)%2)*22;x<W;x+=44)ctx.fillRect(x,y,20,15);
+  }
+
   function drawBug(b){
-    ctx.save();ctx.translate(b.x,b.y);ctx.fillStyle=b.col;
-    ctx.beginPath();ctx.ellipse(0,0,b.size,b.size*.55,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(b.size*.75,0,b.size*.32,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(b.size*.88,-b.size*.08,2.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#111';ctx.beginPath();ctx.arc(b.size*.9,-b.size*.08,1.2,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle=b.col;ctx.lineWidth=1.5;
-    const lp=Math.sin(b.phase)*4;
-    [-.35,0,.35].forEach(oy=>{ctx.beginPath();ctx.moveTo(-b.size*.25,oy*b.size*.5);ctx.lineTo(-b.size*.7,oy*b.size*.5+lp);ctx.stroke();ctx.beginPath();ctx.moveTo(b.size*.2,oy*b.size*.5);ctx.lineTo(b.size*.6,oy*b.size*.5-lp);ctx.stroke();});
+    const s=b.size,u=s*.15,lp=Math.sin(b.phase)*2;
+    ctx.save();ctx.translate(b.x,b.y);
+    const bob=Math.sin(b.phase)*1;
+    ctx.translate(0,bob*.3);
+    // helper: fill a pixel rect at grid coords (x,y,w,h) scaled by u
+    function p(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x*u,y*u,w*u,h*u);}
+    // shadow
+    p(-3,5.5,8,1.5,'rgba(0,0,0,.14)');
+    // body outline (dark border, 1px bigger)
+    const dark=b.col.replace(/ff|ee|dd/,'aa').replace(/8c|87|b3/,'55').replace(/77/,'44').replace(/9e/,'66');
+    p(-3.2,-4.7,8.4,9.2,dark+'88');
+    // body fill rows
+    const rows=[[-1,-4.5,4,1],[-2,-3.5,6,1],[-3,-2.5,8,1],[-3,-1.5,8,1],[-3,-.5,8,1],[-3,.5,8,1],[-3,1.5,8,1],[-2,2.5,6,1],[-1,3.5,4,1]];
+    rows.forEach(([x,y,w,h])=>p(x,y,w,h,b.col));
+    // body highlight (lighter top edge)
+    const light=b.col+'aa';
+    p(-1,-4.3,2,0.6,'rgba(255,255,255,.25)');
+    p(-2,-3.3,3,0.6,'rgba(255,255,255,.2)');
+    // blush
+    p(-3.5,.8,1.2,.8,'rgba(255,140,140,.3)');
+    p(4.3,.8,1.2,.8,'rgba(255,140,140,.3)');
+    // eyes white
+    p(-2.3,-1.2,2.6,2.6,'#fff');
+    p(1.7,-1.2,2.6,2.6,'#fff');
+    // pupils
+    p(-1.3,-.2,1.4,1.4,'#222');
+    p(2.7,-.2,1.4,1.4,'#222');
+    // eye highlights
+    p(-.9,-.7,.6,.6,'#fff');
+    p(3.1,-.7,.6,.6,'#fff');
+    // mouth (2x1 pixels)
+    p(-.3,1.8,1,0.6,'rgba(0,0,0,.22)');
+    p(.7,1.8,1,0.6,'rgba(0,0,0,.22)');
+    // antennae stems
+    const ax=lp*.25;
+    p(-.5,-5.5,.6,1.5,b.col);
+    p(2.2,-5.5,.6,1.5,b.col);
+    // antennae tips
+    p(-1+ax,-6.8,2,1.3,b.col);
+    p(1.5+ax,-6.8,2,1.3,b.col);
+    // legs
+    p(-4.5,-.2,1.5,.6,'rgba(0,0,0,.2)');
+    p(-4.5,1.2,1.5,.6,'rgba(0,0,0,.2)');
+    p(-3.5,2.8,1.5,.6,'rgba(0,0,0,.2)');
+    p(5,-.2,1.5,.6,'rgba(0,0,0,.2)');
+    p(5,1.2,1.5,.6,'rgba(0,0,0,.2)');
+    p(4,2.8,1.5,.6,'rgba(0,0,0,.2)');
     ctx.restore();
   }
-  function drawDeadBug(b){ctx.save();ctx.translate(b.x,b.y);ctx.rotate(Math.PI*.5);ctx.globalAlpha=Math.max(0,1-b.dt/14);ctx.fillStyle='#888';ctx.beginPath();ctx.ellipse(0,0,b.size,b.size*.55,0,0,Math.PI*2);ctx.fill();ctx.restore();}
-  function drawStar(s){ctx.save();ctx.translate(s.x,s.y);ctx.strokeStyle='#f0c040';ctx.lineWidth=2;ctx.globalAlpha=1-s.t/8;const r=6+s.t*2;for(let i=0;i<4;i++){const a=Math.PI/4*i;ctx.beginPath();ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);ctx.lineTo(Math.cos(a+Math.PI)*r,Math.sin(a+Math.PI)*r);ctx.stroke();}ctx.restore();}
-  let raf;
-  function loop(){ctx.clearRect(0,0,W,H);drawBg();bugs.forEach(b=>b.dead?(b.dt++,drawDeadBug(b)):(b.phase+=b.speed,drawBug(b)));stars.forEach(s=>{s.t++;drawStar(s);});for(let i=bugs.length-1;i>=0;i--)if(bugs[i].dead&&bugs[i].dt>14)bugs.splice(i,1);for(let i=stars.length-1;i>=0;i--)if(stars[i].t>8)stars.splice(i,1);raf=requestAnimationFrame(loop);}
-  loop();
-  cv.onclick=function(e){
-    if(done)return;const r=cv.getBoundingClientRect();const mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
-    for(const b of bugs){if(b.dead)continue;if(Math.abs(mx-b.x)<b.size*1.3&&Math.abs(my-b.y)<b.size){b.dead=true;stars.push({x:b.x,y:b.y,t:0});killed++;document.getElementById('g1cnt').textContent=killed;document.getElementById('g1bar').style.width=(killed/TOTAL*100)+'%';if(killed>=TOTAL){done=true;clearInterval(si);cancelAnimationFrame(raf);spawnParticles();document.getElementById('g1win').classList.add('show');}break;}}
-  };
-}
 
+  function drawDeadBug(b){
+    ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.dt*.12);ctx.globalAlpha=Math.max(0,1-b.dt/18);
+    const u=b.size*.14;
+    function p(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x*u,y*u,w*u,h*u);}
+    p(-2,0,6,2,'#777');
+    p(-1,-1,4,2,'#777');
+    p(-.5,-.3,.8,1,'#555');p(1.5,-.3,.8,1,'#555');
+    p(-.8,.3,.8,1,'#555');p(2,.3,.8,1,'#555');
+    ctx.restore();
+  }
+
+  function drawStar(s){
+    ctx.save();ctx.translate(s.x,s.y);ctx.globalAlpha=1-s.t/10;
+    const r=5+s.t*2.5;
+    const colors=['#f0c040','#ff8844','#ffdd66'];
+    for(let i=0;i<6;i++){
+      const a=Math.PI/3*i+s.t*.1;
+      ctx.strokeStyle=colors[i%3];ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(Math.cos(a)*r*.4,Math.sin(a)*r*.4);
+      ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);ctx.stroke();
+    }
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,r*.15,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+
+  let raf;
+  function loop(){
+    if(done){ctx.clearRect(0,0,W,H);drawBg();return;}
+    ctx.clearRect(0,0,W,H);drawBg();
+    bugs.forEach(b=>{
+      if(b.dead){b.dt++;drawDeadBug(b);}
+      else{b.phase+=b.speed;drawBug(b);}
+    });
+    stars.forEach(s=>{s.t++;drawStar(s);});
+    for(let i=bugs.length-1;i>=0;i--)if(bugs[i].dead&&bugs[i].dt>18)bugs.splice(i,1);
+    for(let i=stars.length-1;i>=0;i--)if(stars[i].t>10)stars.splice(i,1);
+    raf=requestAnimationFrame(loop);
+  }
+  loop();
+
+  function tryKill(mx,my){
+    if(done)return;
+    for(const b of bugs){
+      if(b.dead)continue;
+      const hr=b.size*.9;
+      if(Math.abs(mx-b.x)<hr&&Math.abs(my-b.y)<b.size*.9){
+        b.dead=true;stars.push({x:b.x,y:b.y,t:0});
+        killed++;
+        document.getElementById('g1cnt').textContent=killed;
+        document.getElementById('g1bar').style.width=(killed/TOTAL*100)+'%';
+        if(killed>=TOTAL){
+          done=true;clearInterval(si);cancelAnimationFrame(raf);
+          spawnParticles();document.getElementById('g1win').classList.add('show');
+        }
+        break;
+      }
+    }
+  }
+
+  cv.onclick=function(e){
+    const r=cv.getBoundingClientRect();
+    tryKill((e.clientX-r.left)*(W/r.width),(e.clientY-r.top)*(H/r.height));
+  };
+  cv.addEventListener('touchstart',function(e){
+    e.preventDefault();
+    const r=cv.getBoundingClientRect(),t=e.touches[0];
+    tryKill((t.clientX-r.left)*(W/r.width),(t.clientY-r.top)*(H/r.height));
+  },{passive:false});
+}
 // ══════════════════════════
 // G2 接水
 // ══════════════════════════
@@ -916,8 +1035,8 @@ async function shareAsImage(){
   btn.innerHTML='⏳ 生成中…';btn.disabled=true;
 
   try{
-    // 用canvas手绘信件图片
-    const cw=600,padding=40;
+    const scale=window.devicePixelRatio||2;
+    const cw=900,padding=50;
     const lines=letterText.split('\n');
     const signLine='— 爱你的爷爷   写于某个秋天的傍晚';
     const allLines=[...lines,'',signLine];
@@ -925,9 +1044,9 @@ async function shareAsImage(){
     // 先量高
     const tmpCv=document.createElement('canvas');tmpCv.width=cw;
     const tmpCtx=tmpCv.getContext('2d');
-    tmpCtx.font='18px ZCOOL XiaoWei,Noto Serif SC,serif';
-    const lineH=32,maxW=cw-padding*2;
-    let totalH=padding*2+60; // header
+    tmpCtx.font='20px ZCOOL XiaoWei,Noto Serif SC,serif';
+    const lineH=36,maxW=cw-padding*2;
+    let totalH=padding*2+70;
     allLines.forEach(line=>{
       if(!line){totalH+=lineH*.6;return;}
       const words=line.split('');let row='';
@@ -940,64 +1059,64 @@ async function shareAsImage(){
     });
     totalH+=padding;
 
-    const cv=document.createElement('canvas');cv.width=cw;cv.height=totalH;
+    const cv=document.createElement('canvas');
+    cv.width=cw*scale;cv.height=totalH*scale;
     const ctx=cv.getContext('2d');
+    ctx.scale(scale,scale);
 
     // 背景
     const bg=ctx.createLinearGradient(0,0,cw,totalH);
-    bg.addColorStop(0,'#fdf3dc');bg.addColorStop(1,'#f0e0b0');
+    bg.addColorStop(0,'#fef7e8');bg.addColorStop(.5,'#f8ebd0');bg.addColorStop(1,'#f0dbb8');
     ctx.fillStyle=bg;ctx.fillRect(0,0,cw,totalH);
 
     // 横线
-    ctx.strokeStyle='rgba(107,76,42,.09)';ctx.lineWidth=1;
-    for(let y=padding+60+lineH;y<totalH-padding;y+=lineH){
+    ctx.strokeStyle='rgba(160,120,60,.1)';ctx.lineWidth=1;
+    for(let y=padding+70+lineH;y<totalH-padding;y+=lineH){
       ctx.beginPath();ctx.moveTo(padding,y);ctx.lineTo(cw-padding,y);ctx.stroke();
     }
     // 左侧红线
-    ctx.strokeStyle='rgba(180,80,60,.18)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(padding+14,padding);ctx.lineTo(padding+14,totalH-padding);ctx.stroke();
+    ctx.strokeStyle='rgba(185,70,50,.2)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(padding+18,padding+10);ctx.lineTo(padding+18,totalH-padding-10);ctx.stroke();
 
-    // 边框
-    ctx.strokeStyle='#c8a060';ctx.lineWidth=2;ctx.strokeRect(1,1,cw-2,totalH-2);
+    // 双线边框
+    ctx.strokeStyle='#c8a060';ctx.lineWidth=3;ctx.strokeRect(2,2,cw-4,totalH-4);
+    ctx.strokeStyle='rgba(180,140,100,.4)';ctx.lineWidth=1;ctx.strokeRect(7,7,cw-14,totalH-14);
 
-    // header
-    ctx.fillStyle='#b82818';ctx.beginPath();ctx.arc(padding+26,padding+26,22,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='bold 14px serif';ctx.textAlign='center';
-    ctx.fillText('祖',padding+26,padding+31);
-    ctx.fillStyle='rgba(107,76,42,.55)';ctx.font='11px ZCOOL XiaoWei,serif';ctx.textAlign='left';
-    ctx.fillText('来自 · 爷爷藏在种子里的秘籍',padding+56,padding+20);
-    ctx.fillStyle='#3a2a1a';ctx.font='bold 20px ZCOOL XiaoWei,Noto Serif SC,serif';
-    ctx.fillText(`${playerName}，展信佳`,padding+56,padding+44);
+    // header - 无印章
+    ctx.fillStyle='rgba(107,76,42,.5)';ctx.font='12px ZCOOL XiaoWei,serif';ctx.textAlign='left';
+    ctx.fillText('来自 · 爷爷藏在种子里的秘籍',padding+20,padding+26);
+    ctx.fillStyle='#3a2a1a';ctx.font='bold 22px ZCOOL XiaoWei,Noto Serif SC,serif';
+    ctx.fillText(`${playerName}，展信佳`,padding+20,padding+52);
 
     // 分割线
-    ctx.strokeStyle='rgba(107,76,42,.25)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
-    ctx.beginPath();ctx.moveTo(padding,padding+60);ctx.lineTo(cw-padding,padding+60);ctx.stroke();
+    ctx.strokeStyle='rgba(160,120,60,.3)';ctx.lineWidth=1;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(padding,padding+70);ctx.lineTo(cw-padding,padding+70);ctx.stroke();
     ctx.setLineDash([]);
 
     // 正文
-    ctx.fillStyle='#3a2a1a';ctx.font='17px ZCOOL XiaoWei,Noto Serif SC,serif';ctx.textAlign='left';
-    let y=padding+60+lineH;
+    ctx.fillStyle='#3a2818';ctx.font='19px ZCOOL XiaoWei,Noto Serif SC,serif';ctx.textAlign='left';
+    let y=padding+70+lineH;
     allLines.forEach((line,li)=>{
       if(!line){y+=lineH*.6;return;}
       const isSign=li===allLines.length-1;
-      if(isSign){ctx.fillStyle='rgba(107,76,42,.75)';ctx.font='15px ZCOOL XiaoWei,Noto Serif SC,serif';}
+      if(isSign){ctx.fillStyle='rgba(107,76,42,.75)';ctx.font='16px ZCOOL XiaoWei,Noto Serif SC,serif';}
       const words=line.split('');let row='';
       words.forEach(ch=>{
         const test=row+ch;
         if(tmpCtx.measureText(test).width>maxW){
-          ctx.fillText(row,isSign?cw-padding-tmpCtx.measureText(row).width:padding+20,y);
+          ctx.fillText(row,isSign?cw-padding-tmpCtx.measureText(row).width:padding+24,y);
           y+=lineH;row=ch;
         }else row=test;
       });
       if(row){
-        ctx.fillText(row,isSign?cw-padding-tmpCtx.measureText(row).width:padding+20,y);
+        ctx.fillText(row,isSign?cw-padding-tmpCtx.measureText(row).width:padding+24,y);
         y+=lineH;
       }
     });
 
     // 底部小标
-    ctx.fillStyle='rgba(107,76,42,.3)';ctx.font='12px serif';ctx.textAlign='center';
-    ctx.fillText('✦ 爷爷的种子 ✦',cw/2,totalH-12);
+    ctx.fillStyle='rgba(107,76,42,.25)';ctx.font='13px serif';ctx.textAlign='center';
+    ctx.fillText('✦ 爷爷的种子 ✦',cw/2,totalH-16);
 
     // 下载
     const url=cv.toDataURL('image/png');
@@ -1024,7 +1143,7 @@ function restart(){
   ['g1win','g2win','g3win'].forEach(id=>document.getElementById(id).classList.remove('show'));
   document.getElementById('cardGrid').innerHTML='';
   // 重置开场暗幕
-  introAct=1;
+  introAct=1;introReady=false;
   const intro=document.getElementById('intro-screen');
   intro.style.display='';intro.style.opacity='1';
   // 重置各幕
