@@ -119,9 +119,13 @@ input[type=text]::placeholder{color:#b8956a;opacity:.7;}
   font-family:inherit;font-size:14px;color:var(--ink);
   cursor:pointer;text-align:left;transition:all .15s;line-height:1.5;
 }
-.choice-btn:hover{background:rgba(107,76,42,.14);border-color:var(--soil-l);transform:translateX(3px);}
 .choice-btn.selected{background:rgba(107,76,42,.2);border-color:var(--soil);color:var(--soil);}
 .ckey{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--soil);color:var(--parch);font-size:11px;flex-shrink:0;}
+
+/* 仅在支持 hover 的设备启用悬停反馈，避免手机端触摸后样式粘滞 */
+@media (hover:hover) and (pointer:fine){
+  .choice-btn:hover{background:rgba(107,76,42,.14);border-color:var(--soil-l);transform:translateX(3px);}
+}
 
 /* ── 游戏通用 ── */
 .game-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:4px 0 8px;}
