@@ -16,11 +16,45 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
-  background:#1a2e0e;
+  background:#0a0a08;
   font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
   overflow-x:hidden;
+  transition:background 1.4s ease;
 }
+body.lit{background:#1a2e0e;}
+
+/* ── 开场暗幕 ── */
+#intro-screen{
+  position:fixed;inset:0;
+  background:#0a0a08;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  z-index:999;
+  cursor:pointer;
+  transition:opacity .8s ease;
+}
+#intro-screen.fade-out{opacity:0;pointer-events:none;}
+
+.intro-line{
+  font-size:20px;color:#ccc;
+  line-height:2.2;letter-spacing:2px;
+  text-align:center;
+  opacity:0;
+  transition:opacity .9s ease;
+  max-width:340px;
+}
+.intro-line.show{opacity:1;}
+.intro-line.dim{color:#888;font-size:16px;margin-top:8px;}
+
+.intro-hint{
+  position:absolute;bottom:48px;
+  font-size:12px;color:#555;letter-spacing:3px;
+  opacity:0;transition:opacity .6s ease;
+  animation:hintPulse 2s ease-in-out infinite;
+}
+.intro-hint.show{opacity:1;}
+@keyframes hintPulse{0%,100%{opacity:.35}50%{opacity:.8}}
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:
@@ -106,11 +140,12 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
 
 /* ── 翻牌游戏 ── */
 .card-grid{
-  display:grid;grid-template-columns:repeat(5,64px);gap:8px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  width:100%;max-width:340px;
   margin:4px 0;
 }
 .memo-card{
-  width:64px;height:82px;cursor:pointer;
+  width:100%;height:80px;cursor:pointer;
   position:relative;transform-style:preserve-3d;
   transition:transform .4s cubic-bezier(.4,0,.2,1);
 }
@@ -267,12 +302,62 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
   box-shadow:3px 3px 0 #050500;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* ── 手机端适配 ── */
+@media(max-width:560px){
+  body{padding:12px;}
+  .scene{width:100%;}
+  .card{padding:18px 16px;}
+  .title-cn{font-size:20px;}
+  canvas{width:100%!important;height:auto!important;}
+  .farm-cvwrap{width:100%;}
+  .card-grid{grid-template-columns:repeat(4,1fr)!important;gap:6px;width:100%;}
+  .memo-card{width:auto;height:70px;}
+  .gbar-wrap{width:100%;max-width:280px;}
+  .pbar-wrap{width:90%;}
+  .choice-btn{font-size:13px;padding:10px 12px;}
+  .intro-line{font-size:17px;padding:0 20px;}
+  #intro-act3 input{font-size:18px;}
+  .btn{font-size:14px;padding:9px 18px;}
+  .share-row{flex-direction:column;}
+  .share-row .btn{margin-top:8px;}
+}
 </style>
 </head>
 <body>
+<!-- 开场暗幕 -->
+<div id="intro-screen" onclick="introClick()">
+  <!-- 第一幕：压力 -->
+  <div id="intro-act1" style="display:flex;flex-direction:column;align-items:center;gap:0;">
+    <div class="intro-line" id="il1">这段时间，压力大得喘不过气。</div>
+    <div class="intro-line dim" id="il2">算法、内卷、不知道明天在哪里——</div>
+  </div>
+  <!-- 第二幕：铁盒 -->
+  <div id="intro-act2" style="display:none;flex-direction:column;align-items:center;gap:0;">
+    <div class="intro-line" id="il3">你翻出了爷爷留下的一个旧铁盒。</div>
+    <div class="intro-line dim" id="il4">里面有一封信，</div>
+    <div class="intro-line dim" id="il5">信封上写着一个名字。</div>
+  </div>
+  <!-- 第三幕：输入名字（不可点穿）-->
+  <div id="intro-act3" style="display:none;flex-direction:column;align-items:center;gap:12px;" onclick="e=>e.stopPropagation()">
+    <div class="intro-line show" style="margin-bottom:4px;">信封上写的是——</div>
+    <input type="text" id="playerName" placeholder="你的名字"
+      maxlength="12" autocomplete="off"
+      style="background:transparent;border:none;border-bottom:1px solid #555;
+             color:#ddd;font-family:inherit;font-size:20px;letter-spacing:3px;
+             text-align:center;outline:none;width:200px;padding:6px 0;caret-color:#aaa;"
+    />
+    <button id="openBtn"
+      style="margin-top:14px;background:transparent;border:1px solid #555;color:#aaa;
+             font-family:inherit;font-size:14px;letter-spacing:3px;padding:9px 24px;
+             cursor:pointer;opacity:.4;transition:all .3s;"
+      disabled onclick="dismissIntro()">打开信封 →</button>
+  </div>
+  <div class="intro-hint" id="introHint">点击继续</div>
+</div>
+
 <div class="particles" id="particles"></div>
 <div class="toast" id="toast"></div>
-<div class="scene">
+<div class="scene" id="mainScene" style="opacity:0;transition:opacity .8s ease;">
   <div class="scene-top">
     <div class="title-en">✦ grandpa's seeds ✦</div>
     <div class="title-cn">爷爷的种子</div>
@@ -280,16 +365,7 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
   <div class="card">
 
     <!-- S0 -->
-    <div class="step active" id="s0">
-      <div class="chip">📮 一封旧信</div>
-      <div class="prose">这段时间，压力大得喘不过气。<br>算法、内卷、不知道明天在哪里——<br>你翻出了爷爷留下的一个旧铁盒。</div>
-      <div class="prose">里面有一封信，信封上写着一个名字。</div>
-      <div class="field-wrap" style="margin-top:16px;">
-        <div class="field-label">✉ 信封上写的是——</div>
-        <input type="text" id="playerName" placeholder="你的名字" maxlength="12" autocomplete="off"/>
-      </div>
-      <button class="btn" id="openBtn" onclick="openEnvelope()" disabled>📬 打开信封</button>
-    </div>
+    <div class="step active" id="s0" style="display:none;"></div>
 
     <!-- S1 -->
     <div class="step" id="s1">
@@ -350,7 +426,7 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
         <div class="game-title">🍃 翻开叶子，找到成对的阳光</div>
         <div class="game-sub">每次翻两张，图案相同则消除</div>
         <div class="gbar-wrap"><div class="gbar-fill" id="g3bar"></div></div>
-        <div class="game-msg">收集 <b id="g3cnt">0</b> / <b>5</b> 对</div>
+        <div class="game-msg">收集 <b id="g3cnt">0</b> / <b>4</b> 对</div>
         <div class="card-grid" id="cardGrid"></div>
         <div class="game-success" id="g3win">
           <div class="sicon">🌿</div><div class="stxt">阳光收集完了！</div><div class="ssub">幼苗沐浴到了光……</div>
@@ -410,6 +486,77 @@ canvas{border:3px solid var(--soil);box-shadow:3px 3px 0 #050500;display:block;c
 
 <script>
 // ══════════════════════════
+// 开场动画（三幕）
+// ══════════════════════════
+let introAct = 1; // 当前幕次
+
+async function runIntro(){
+  await sleep(400);
+  document.getElementById('il1').classList.add('show');
+  await sleep(900);
+  document.getElementById('il2').classList.add('show');
+  await sleep(700);
+  document.getElementById('introHint').classList.add('show');
+}
+runIntro();
+
+async function introClick(){
+  if(introAct===1){
+    // 切到第二幕
+    introAct=2;
+    document.getElementById('introHint').classList.remove('show');
+    // 淡出第一幕
+    const a1=document.getElementById('intro-act1');
+    a1.style.transition='opacity .5s';a1.style.opacity='0';
+    await sleep(500);
+    a1.style.display='none';
+    // 显示第二幕
+    const a2=document.getElementById('intro-act2');
+    a2.style.display='flex';
+    await sleep(100);
+    document.getElementById('il3').classList.add('show');
+    await sleep(750);
+    document.getElementById('il4').classList.add('show');
+    await sleep(600);
+    document.getElementById('il5').classList.add('show');
+    await sleep(500);
+    document.getElementById('introHint').classList.add('show');
+  } else if(introAct===2){
+    // 切到第三幕（输入名字）
+    introAct=3;
+    document.getElementById('introHint').classList.remove('show');
+    const a2=document.getElementById('intro-act2');
+    a2.style.transition='opacity .5s';a2.style.opacity='0';
+    await sleep(500);
+    a2.style.display='none';
+    const a3=document.getElementById('intro-act3');
+    a3.style.display='flex';a3.style.opacity='0';
+    a3.style.transition='opacity .6s';
+    await sleep(50);a3.style.opacity='1';
+    // 阻止这一幕的点击冒泡到intro-screen
+    a3.onclick=(e)=>e.stopPropagation();
+    setTimeout(()=>document.getElementById('playerName').focus(),300);
+  }
+  // act3 不响应点击，由按钮触发 dismissIntro
+}
+
+function dismissIntro(){
+  if(!document.getElementById('playerName').value.trim())return;
+  playerName=document.getElementById('playerName').value.trim();
+  const intro=document.getElementById('intro-screen');
+  intro.style.transition='opacity .8s';intro.style.opacity='0';
+  document.body.classList.add('lit');
+  setTimeout(()=>{
+    intro.style.display='none';
+    document.getElementById('mainScene').style.opacity='1';
+    // 同步主流程的 playerName
+    document.getElementById('openBtn2')&&(document.getElementById('openBtn2').disabled=false);
+    // 直接进入S1
+    openEnvelope();
+  },850);
+}
+
+// ══════════════════════════
 // 选择题
 // ══════════════════════════
 const QS=[
@@ -432,42 +579,42 @@ const QS=[
 // ══════════════════════════
 const L={
   drain:{
-    '工作或学业的压力':`你知道吗，爷爷年轻的时候也种过一块地，从天亮忙到天黑，腰都直不起来。有一天我问老村长：这地到底什么时候才能歇？\n他说：地不需要你一直弯着腰，它需要你偶尔站起来看看远处。你也是。`,
-    '人际关系与沟通':`人和人之间，就像两棵挨得太近的树，有时候会争同一片阳光。不是谁的错，只是都在努力活着。\n爷爷见过很多这样的事，最后那些树都慢慢找到了自己的方向。`,
-    '对未来感到迷茫':`爷爷第一次种地的时候，也不知道种子会不会发芽。没有人告诉我答案，我只是把它放进土里，然后每天来看一眼。\n你现在做的事，和那时候爷爷做的，其实是一样的。`,
-    '身体或精神上的疲惫':`土地累了，会裂缝。人累了，会沉默。\n这不是软弱，这是在告诉你该停下来歇一歇了。庄稼不会因为你休息一天就不长，你也不会。`,
+    '工作或学业的压力':`你知道吗，爷爷年轻的时候也种过一块地，从天亮忙到天黑，腰都直不起来。有一天我问老村长：这地到底什么时候才能歇？他说：地不需要你一直弯着腰，它需要你偶尔站起来看看远处。你也是。`,
+    '人际关系与沟通':`人和人之间，就像两棵挨得太近的树，有时候会争同一片阳光。不是谁的错，只是都在努力活着。`,
+    '对未来感到迷茫':`爷爷第一次种地的时候，也不知道种子会不会发芽。没有人告诉我答案，我只是把它放进土里，然后每天来看一眼。你现在做的事，和那时候爷爷做的，其实是一样的。`,
+    '身体或精神上的疲惫':`土地累了，会裂缝。人累了，会沉默。这不是软弱，这是在告诉你该停下来歇一歇了。庄稼不会因为你休息一天就不长，你也不会。`,
   },
 
   // 段落2：根据 react（应对方式）
   react: {
-    '硬撑着继续做':`不要硬撑，孩子，爷爷知道你是个不服输的孩子。\n但你有没有发现，最好的庄稼，从来不是催出来的——它是等出来的。`,
-    '躲进手机里':`如果压力太大，想躲一会儿也没关系。爷爷累的时候，会坐在田埂上发一会儿呆。你知道吗，田埂上的风，和地里的风，是不一样的。\n偶尔出来透口气，比一直躲着要好。`,
-    '找人说说话':`压力大的时候愿意找人说说话，是很了不起的事。爷爷那个年代，很多人把话咽进肚子里，结果憋出了病。\n你没有，这让爷爷很放心。`,
-    '什么都不想做，只发呆':`有压力的时候，如果只想发呆，那发呆也不算浪费时间。\n爷爷有时候会对着田里站半个小时，什么都不做。那半个小时，是爷爷把自己还给自己的时间。\n你也需要这样的时间。`,
+    '硬撑着继续做':`不要硬撑，孩子，爷爷知道你是个不服输的孩子。但你有没有发现，最好的庄稼，从来不是催出来的——它是等出来的。`,
+    '躲进手机里':`如果压力太大，想躲一会儿也没关系。爷爷累的时候，会坐在田埂上发一会儿呆。你知道吗，田埂上的风，和地里的风，是不一样的。偶尔出来透口气，比一直躲着要好。`,
+    '找人说说话':`压力大的时候愿意找人说说话，是很了不起的事。爷爷那个年代，很多人把话咽进肚子里，结果憋出了病。你没有，这让爷爷很放心。`,
+    '什么都不想做，只发呆':`有压力的时候，如果只想发呆，那发呆也不算浪费时间。\n爷爷有时候会对着田里站半个小时，什么都不做。那半个小时，是爷爷把自己还给自己的时间。你也需要这样的时间。`,
   },
 
   // 段落3：根据 need（内心需要）
   need: {
-    '被人好好看见一次':`孩子，其实你一直都很想被人好好看见一次，对吗？爷爷看见你了。不是你成绩好不好，不是你赚多少钱——\n就是你这个人，爷爷看见了。你做得很好。`,
-    '得到一个明确的方向':`我知道你现在很迷茫，但爷爷没有答案给你，爷爷只想告诉你一件事：种子不需要知道自己会长成什么，它只需要往下扎根。\n根扎稳了，方向自然就来了。`,
-    '什么都不想，只想好好休息':`如果现在的你什么都不想，只想好好休息的话，那就去休息吧。\n爷爷允许你休息。\n不是所有的停下来都是放弃，有些停下来，是为了走得更远。`,
-    '知道自己没有走错路':`不要总去害怕自己是不是走错了路。你有没有走错路，爷爷不知道。\n但爷爷知道一件事：一个愿意把烦恼种进土里的人，心还没有死。\n心还在，路就还在。`,
+    '被人好好看见一次':`孩子，其实你一直都很想被人好好看见一次，对吗？爷爷看见你了。不是你成绩好不好，不是你赚多少钱——就是你这个人，爷爷看见了。你做得很好。`,
+    '得到一个明确的方向':`我知道你现在很迷茫，但爷爷没有答案给你，爷爷只想告诉你一件事：种子不需要知道自己会长成什么，它只需要往下扎根。根扎稳了，方向自然就来了。`,
+    '什么都不想，只想好好休息':`如果现在的你什么都不想，只想好好休息的话，那就去休息吧。爷爷允许你休息。不是所有的停下来都是放弃，有些停下来，是为了走得更远。`,
+    '知道自己没有走错路':`不要总去害怕自己是不是走错了路。你有没有走错路，爷爷不知道。但爷爷知道一件事：一个愿意把烦恼种进土里的人，心还没有死。心还在，路就还在。`,
   },
 
   // 段落4：根据 weather（烦恼的感受）
   weather: {
-    '连绵阴雨，下个没完':`孩子，你知道吗，雨季是有尽头的。爷爷种了一辈子地，从来没见过一场雨下到地老天荒。\n它总会停的。`,
-    '压得透不过气的闷热':`孩子，你知道吗，闷热的天气，庄稼都会蔫。但蔫了不等于死了。\n等一场雷雨过去，你会发现它们又挺起来了。`,
-    '说来就来的雷阵雨':`孩子，你知道吗，雷阵雨来得快，走得也快。\n爷爷最不怕这种天，因为雨停之后，土地最香。`,
-    '大雾弥漫，什么都看不清':`孩子，你知道吗，雾大的时候，爷爷就不往远处看，只看脚下一步。\n一步一步走，雾自然就散了。`,
+    '连绵阴雨，下个没完':`你知道吗，雨季是有尽头的。爷爷种了一辈子地，从来没见过一场雨下到地老天荒。它总会停的。`,
+    '压得透不过气的闷热':`你知道吗，闷热的天气，庄稼都会蔫。但蔫了不等于死了。等一场雷雨过去，你会发现它们又挺起来了。`,
+    '说来就来的雷阵雨':`你知道吗，雷阵雨来得快，走得也快。爷爷最不怕这种天，因为雨停之后，土地最香。`,
+    '大雾弥漫，什么都看不清':`你知道吗，雾大的时候，爷爷就不往远处看，只看脚下一步。一步一步走，雾自然就散了。`,
   },
 
   // 段落5：根据 words（想对爷爷说的话）——最私密，要最暖
   words: {
-    '我好累，不知道能撑多久':`累了的话，那就先撑到今天就好。\n不用想明天，不用想下个月。\n就今天，就这一刻，你已经做得够多了。`,
-    '我不知道自己在为什么努力':`不知道为什么努力也没关系，爷爷年轻的时候，也问过自己同样的问题。\n后来爷爷想通了：不是每一粒种子都需要知道为什么发芽。\n发芽，是它本来就会做的事。`,
-    '我只是想有人陪着我坐一会儿':`想有人陪着坐一会儿？爷爷陪着你。\n就算隔着这封信，就算隔着那么多年，爷爷还是陪着你坐在这里。\n你不是一个人。`,
-    '我怕我让大家失望了':`你没有让任何人失望过，至少爷爷从来没有对你失望过。\n你知道什么时候爷爷最骄傲吗——\n就是你打开这封信的这一刻。`,
+    '我好累，不知道能撑多久':`累了的话，那就先撑到今天就好。不用想明天，不用想下个月。就今天，就这一刻，你已经做得够多了。`,
+    '我不知道自己在为什么努力':`不知道为什么努力也没关系，爷爷年轻的时候，也问过自己同样的问题。后来爷爷想通了：不是每一粒种子都需要知道为什么发芽。发芽，是它本来就会做的事。`,
+    '我只是想有人陪着我坐一会儿':`想有人陪着坐一会儿？爷爷陪着你。就算隔着这封信，就算隔着那么多年，爷爷还是陪着你坐在这里。你不是一个人。`,
+    '我怕我让大家失望了':`你没有让任何人失望过，至少爷爷从来没有对你失望过。你知道什么时候爷爷最骄傲吗——就是你打开这封信的这一刻。`,
   },
 
   // 结尾段落：根据 close（睡眠情况反馈）
@@ -527,12 +674,19 @@ function showToast(msg){
 // S0
 // ══════════════════════════
 document.getElementById('playerName').addEventListener('input',function(){
-  playerName=this.value.trim();
-  document.getElementById('openBtn').disabled=!playerName;
+  const v=this.value.trim();
+  const btn=document.getElementById('openBtn');
+  btn.disabled=!v;
+  btn.style.opacity=v?'1':'.4';
+  btn.style.borderColor=v?'#888':'#555';
+  btn.style.color=v?'#eee':'#aaa';
 });
-document.getElementById('playerName').addEventListener('keydown',e=>{if(e.key==='Enter'&&playerName)openEnvelope();});
+document.getElementById('playerName').addEventListener('keydown',e=>{
+  if(e.key==='Enter')dismissIntro();
+});
 
 function openEnvelope(){
+  if(!playerName)playerName=document.getElementById('playerName').value.trim();
   if(!playerName)return;
   document.getElementById('s1letter').innerHTML=
     `「${playerName}，<br><br>你找到这封信，说明你最近一定很难熬。<br>爷爷知道这个时代不容易，什么都在变，<br>但有些东西从来没变过——<br><br>土地还在，种子还在。<br><br>信里附了三粒种子，还有一张问题纸条。<br>把纸条答完，种子种下去，<br>等它发芽，你就明白了。」`;
@@ -585,6 +739,9 @@ function nextGame(n){
 // ══════════════════════════
 function initGame1(){
   const cv=document.getElementById('c1'),ctx=cv.getContext('2d');
+  // 手机端缩放
+  const maxW=Math.min(380,document.querySelector('.card').clientWidth-32);
+  cv.style.width=maxW+'px';cv.style.height=Math.round(maxW*200/380)+'px';
   const W=cv.width,H=cv.height,TOTAL=8;
   let killed=0,done=false;
   const bugs=[],stars=[];
@@ -592,8 +749,10 @@ function initGame1(){
     if(done||bugs.length>=5)return;
     bugs.push({x:44+Math.random()*(W-88),y:32+Math.random()*(H-64),phase:0,speed:.04+Math.random()*.04,size:13+Math.floor(Math.random()*6),col:['#8aaa30','#aa6020','#cc4444','#6688aa'][Math.floor(Math.random()*4)],dead:false,dt:0});
   }
-  for(let i=0;i<3;i++)spawnBug();
-  const si=setInterval(()=>{if(!done&&bugs.length<5)spawnBug();},1100);
+  // 延迟生成，避免一开始就堆满
+  setTimeout(()=>spawnBug(),300);
+  setTimeout(()=>spawnBug(),900);
+  const si=setInterval(()=>{if(!done&&bugs.length<4)spawnBug();},1400);
   function drawBg(){ctx.fillStyle='#3e2208';ctx.fillRect(0,0,W,H);ctx.fillStyle='#4a2e14';for(let y=0;y<H;y+=18)for(let x=(Math.floor(y/18)%2)*22;x<W;x+=44)ctx.fillRect(x,y,20,15);}
   function drawBug(b){
     ctx.save();ctx.translate(b.x,b.y);ctx.fillStyle=b.col;
@@ -622,6 +781,8 @@ function initGame1(){
 // ══════════════════════════
 function initGame2(){
   const cv=document.getElementById('c2'),ctx=cv.getContext('2d');
+  const maxW=Math.min(380,document.querySelector('.card').clientWidth-32);
+  cv.style.width=maxW+'px';cv.style.height=Math.round(maxW*200/380)+'px';
   const W=cv.width,H=cv.height,TOTAL=10;
   let caught=0,done=false,potX=W/2,dt=0;
   const drops=[],splashes=[];
@@ -642,8 +803,8 @@ function initGame2(){
 // G3 翻牌配对
 // ══════════════════════════
 function initGame3(){
-  const PAIRS=5;
-  const ICONS=['☀️','🌤','🌞','✨','🌻']; // 5种阳光图案，各2张
+  const PAIRS=4;
+  const ICONS=['☀️','🌤','✨','🌻'];
   const grid=document.getElementById('cardGrid');
   grid.innerHTML='';
 
@@ -862,7 +1023,29 @@ function restart(){
   document.getElementById('letterScene').classList.remove('show');
   ['g1win','g2win','g3win'].forEach(id=>document.getElementById(id).classList.remove('show'));
   document.getElementById('cardGrid').innerHTML='';
-  showStep('s0');
+  // 重置开场暗幕
+  introAct=1;
+  const intro=document.getElementById('intro-screen');
+  intro.style.display='';intro.style.opacity='1';
+  // 重置各幕
+  const a1=document.getElementById('intro-act1');
+  a1.style.display='flex';a1.style.opacity='1';
+  document.getElementById('il1').classList.remove('show');
+  document.getElementById('il2').classList.remove('show');
+  const a2=document.getElementById('intro-act2');
+  a2.style.display='none';a2.style.opacity='1';
+  document.getElementById('il3').classList.remove('show');
+  document.getElementById('il4').classList.remove('show');
+  document.getElementById('il5').classList.remove('show');
+  const a3=document.getElementById('intro-act3');
+  a3.style.display='none';a3.style.opacity='1';
+  document.getElementById('playerName').value='';
+  const btn=document.getElementById('openBtn');
+  btn.disabled=true;btn.style.opacity='.4';btn.style.borderColor='#555';btn.style.color='#aaa';
+  document.getElementById('introHint').classList.remove('show');
+  document.getElementById('mainScene').style.opacity='0';
+  document.body.classList.remove('lit');
+  setTimeout(runIntro,300);
 }
 
 showStep('s0');
